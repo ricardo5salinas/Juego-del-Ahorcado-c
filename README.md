@@ -1,5 +1,5 @@
 # Juego-del-Ahorcado-c
-Practica del juego Ahorcado, no sé si lo llegue a completar pero bueh, aquí esta.
+Practica del juego Ahorcado
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
