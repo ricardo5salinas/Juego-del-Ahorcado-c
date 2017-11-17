@@ -3,6 +3,8 @@ Practica del juego Ahorcado, no sé si lo llegue a completar pero bueh, aquí es
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <string.h>
+#include <time.h>
 
 int ahorcado1[20][20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 					   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -129,32 +131,196 @@ int ahorcado6[20][20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 					   0,0,0,0,1,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,
 					   0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
 					   0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
-					   1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,};					   				   
+					   1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,};			   
 
-int main() {
+	int letras[26];
+	int dentro[26];
+	int vidas=1;					   					   				   
+
+void rellenar(char X[])
+{
+	int len=strlen(X);
+	int I;
+	
+	for(I=0;I<len;I++)
+	{
+		dentro[X[I]-'a']=1;
+	}
+}
+
+int prueba(int x[20][20]){
+	
 	int i, j;
-	char palabra[50];
-	
-	system("cls");
-	
-	printf("\t\t***JUEGO DEL AHORCADO!***\n\n");
-	printf("Introduzca la palabra a adivinar: "); gets(palabra);
-	
-	system("cls");
-	
 	for(i=0;i<20;i++){
 		for(j=0;j<20;j++){
-			if(ahorcado1[i][j]==0){
-				printf("%c ", 176);
+			if(x[i][j]==0)
+			{
+				printf(" ");	//printf("%c", 176);
 			}
 			else{
-				printf("%c ", 219);
+				printf("%c", 219);
 			}
 		}
 		printf("\n");
 	}
-	printf("\n");
+}
+
+void muneco(int x){
+	system("cls");
+	if(x==1) prueba(ahorcado1);
+	if(x==2) prueba(ahorcado2);
+	if(x==3) prueba(ahorcado3);
+	if(x==4) prueba(ahorcado4);
+	if(x==5) prueba(ahorcado5);
+	if(x==6) prueba(ahorcado6);
+	if(x<1 || x>6) printf("Dato Erroneo\n");
+}
+
+void letra(){
 	
+	char l;
+	printf("\nDigite un una letra: ");
+	scanf("%c", &l);
+	fflush(stdin);
+	if(dentro[l-'a']==1)
+	{
+		letras[l-'a']=1;
+	}
+	else
+	{
+		vidas++;
+	}	
+}
+
+void imprimir (char x[]){
+	
+	int i;
+	
+	printf("\n\t");
+	for(i=0;i<(strlen(x));i++)
+	{
+		if(letras[(x[i]-'a')]==1)
+			printf("%c ", x[i]);
+		else	
+			printf("_ ");	
+	}
+	printf("\n");
+}
+
+int ganar(char palabra[20]){
+	
+	int lent,i, gano;
+	lent=(strlen(palabra));
+	gano=1;
+	
+	for(i=0;i<lent;i++){
+		if(letras[palabra[i]-'a']!=1){
+			gano=0;
+		}
+	}
+	
+	return gano;
+}
+
+int vocales(char palabra[20])//0 se acabaron las consonantes, 1 aun quedan consonantes 
+{
+	
+	int i, len,valor;
+	
+	valor=0;
+	
+	len=(strlen(palabra));
+	for(i=0;i<len;i++)
+	{
+		
+		if((palabra[i]-'a'!=0&&palabra[i]-'a'!=4&&palabra[i]-'a'!=8&&palabra[i]-'a'!=14&&palabra[i]-'a'!=20)&&letras[palabra[i]-'a']==0)
+		{
+			valor=1;				
+		}
+		
+		
+			
+	}
+	return valor;
+}
+
+void comodin(char palabra[20]){
+	
+	int x;
+	
+	if(vocales(palabra)==1)
+	{
+		while(1)
+	{
+		x=rand()%26;
+		if(x==0||x==4||x==8||x==14||x==20){
+			continue;
+		}
+		if(dentro[x]==0) continue;
+		if(letras[x]==1) continue;
+					
+		break;
+	}
+	
+	letras[x]=1;
+	
+	vidas++;
+	}
+	else 
+	{
+		printf("Ya no hay mas consonantes\n");
+		system("cls");
+	}
+	
+}
+
+int main() {
+	
+    srand(time(NULL));
+    char ch;
+	int n;
+   	char palabra[20];
+   	int resp;
+	
+	system("cls");
+	
+	printf("\t\t***JUEGO DEL AHORCADO!***\n\n");
+	printf("*El jugador tiene 6 vidas iniciales.\n");
+	printf("Poner la Palabra para Jugar: "); gets(palabra);
+	
+	rellenar(palabra);
+	
+	while(1)
+	{
+		while(vidas!=6)
+		{
+		muneco(vidas);	
+		imprimir(palabra);
+		printf("\n 1) Usar Comodin? (Se perdera 1 vida)\n 2)Adivinar letra: \n");
+		scanf("%i", &resp);
+		if (resp==1) comodin(palabra); fflush(stdin);
+		if (resp==2) letra();
+		if(ganar(palabra)==1){
+			system("cls");
+			printf("\n\tGano Felicitaciones.\n\n");
+			break;
+		}
+		system("cls");	
+		}
+		if(vidas==6){
+			system("cls");
+			printf("\n\tPerdiste we.\n");
+		}
+		
+		printf("Preciona cualquier tecla.\n");
+		scanf("%c",&ch);
+		if(ch=='q');
+			break;
+			system("cls")	;
+	}
+	
+	
+
 	system("pause");
 	return 0;
 }
